@@ -1,4 +1,5 @@
-﻿using bex.test.country.api.Capa.Dominio.Entidades;
+﻿using bex.test.country.api.Capa.Aplicacion.DTOs;
+using bex.test.country.api.Capa.Dominio.Entidades;
 using bex.test.country.api.Capa.Dominio.Enums;
 using bex.test.country.api.Capa.Dominio.Interfaces;
 using bex.test.country.api.Capa.Infraestructura.Data.Interface;
@@ -51,7 +52,7 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
             return resultadoGenerico.EsExitoso;
         }
 
-        public async Task<List<Departamento>> GetAll()
+        public async Task<List<DepartamentoDTO>> GetAll()
         {
             SqlSPEjecuta sqlSPExecute = new()
             {
@@ -59,10 +60,10 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
                 Parametros = new(),
                 AccionSP = AccionSP.Select
             };
-            return await _sqlExecute.EjecutaGenericoPSAsync<List<Departamento>>(sqlSPExecute);
+            return await _sqlExecute.EjecutaGenericoPSAsync<List<DepartamentoDTO>>(sqlSPExecute);
         }
 
-        public async Task<Departamento> GetById(int departamentoId)
+        public async Task<DepartamentoDTO> GetById(int departamentoId)
         {
             List<ParametroGenerico> paramGenerics = new List<ParametroGenerico>
             {
@@ -75,7 +76,7 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
                 Parametros = paramGenerics,
                 AccionSP = AccionSP.Select
             };
-            List<Departamento> departamentos = await _sqlExecute.EjecutaGenericoPSAsync<List<Departamento>>(sqlSPExecute);
+            List<DepartamentoDTO> departamentos = await _sqlExecute.EjecutaGenericoPSAsync<List<DepartamentoDTO>>(sqlSPExecute);
             return departamentos.FirstOrDefault();
         }
 
@@ -96,7 +97,7 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
             return departamentos.FirstOrDefault();
         }
 
-        public async Task<List<Departamento>> GetByPaisId(int paisId)
+        public async Task<List<DepartamentoDTO>> GetByPaisId(int paisId)
         {
             List<ParametroGenerico> paramGenerics = new List<ParametroGenerico>
             {
@@ -109,7 +110,7 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
                 Parametros = paramGenerics,
                 AccionSP = AccionSP.Select
             };
-            return await _sqlExecute.EjecutaGenericoPSAsync<List<Departamento>>(sqlSPExecute);
+            return await _sqlExecute.EjecutaGenericoPSAsync<List<DepartamentoDTO>>(sqlSPExecute);
         }
 
         public async Task<Departamento> Update(Departamento departamento)

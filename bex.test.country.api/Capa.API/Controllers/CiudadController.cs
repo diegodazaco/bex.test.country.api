@@ -1,4 +1,5 @@
 ﻿using bex.test.country.api.Capa.Aplicacion.Common;
+using bex.test.country.api.Capa.Aplicacion.DTOs;
 using bex.test.country.api.Capa.Aplicacion.Interfaces;
 using bex.test.country.api.Capa.Aplicacion.Servicio;
 using bex.test.country.api.Capa.Dominio.Entidades;
@@ -24,12 +25,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             _logger.LogInformation("Llamado al metodo GetAll en el CiudadController");
             try
             {
-                List<Ciudad> ciudades = await _ciudadServicio.GetAll();
+                List<CiudadDTO> ciudades = await _ciudadServicio.GetAll();
                 return Ok(new { Message = "Se encontraron " + ciudades.Count.ToString() + " ciudades", Resultado = ciudades, EsExitoso = true });
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -43,15 +44,15 @@ namespace bex.test.country.api.Capa.API.Controllers
         {
             _logger.LogInformation("Llamado al metodo GetById en el CiudadController");
             if (ciudadId <= 0)
-                return BadRequest("El ID de la ciudad es inválido.");
+                return Ok("El ID de la ciudad es inválido.");
             try
             {
-                Ciudad ciudad = await _ciudadServicio.GetById(ciudadId);
+                CiudadDTO ciudad = await _ciudadServicio.GetById(ciudadId);
                 return Ok(new { Mensaje = "Ciudad encontrada: " + ciudad.NombreCiudad, Resultado = ciudad, EsExitoso = true });
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -65,15 +66,15 @@ namespace bex.test.country.api.Capa.API.Controllers
         {
             _logger.LogInformation("Llamado al metodo GetByDepartamentoId en el CiudadController");
             if (departamentoId <= 0)
-                return BadRequest("El ID del departamento es inválido.");
+                return Ok("El ID del departamento es inválido.");
             try
             {
-                List<Ciudad> ciudades = await _ciudadServicio.GetByDepartamentoId(departamentoId);
+                List<CiudadDTO> ciudades = await _ciudadServicio.GetByDepartamentoId(departamentoId);
                 return Ok(new { Mensaje = "Se encontraron " + ciudades.Count.ToString() + " ciudades para el departamento con ID: " + departamentoId, Resultado = ciudades, EsExitoso = true });
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -82,12 +83,34 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
+        [HttpGet(nameof(CiudadController.GetByNombre))]
+        public async Task<IActionResult> GetByNombre(string nombreCiudad)
+        {
+            _logger.LogInformation("Llamado al metodo GetByNombre en el CiudadController");
+            if (string.IsNullOrEmpty(nombreCiudad))
+                return Ok("El nombre de la ciudad es inválido.");
+            try
+            {
+                Ciudad ciudad = await _ciudadServicio.GetByNombre(nombreCiudad);
+                return Ok(new { Mensaje = "Ya existe una ciudad con el nombre de: " + ciudad.NombreCiudad, Resultado = ciudad, EsExitoso = true });
+            }
+            catch (ValidacionException vex)
+            {
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la ciudad con nombre: {Nombre}. Mensaje {Message}", nombreCiudad, ex.Message);
+                return StatusCode(500, "Ocurrió un error interno al obtener la ciudad.");
+            }
+        }
+
         [HttpPost(nameof(CiudadController.Create))]
         public async Task<IActionResult> Create([FromBody] Ciudad ciudad)
         {
             _logger.LogInformation("Llamado al metodo Create en el CiudadController");
             if (ciudad == null)
-                return BadRequest("El objeto ciudad no puede ser nulo.");
+                return Ok("El objeto ciudad no puede ser nulo.");
             try
             {
                 Ciudad ciudadCreada = await _ciudadServicio.Create(ciudad);
@@ -95,7 +118,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -104,12 +127,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
-        [HttpPost(nameof(CiudadController.Delete))]
+        [HttpDelete(nameof(CiudadController.Delete))]
         public async Task<IActionResult> Delete(int ciudadId)
         {
             _logger.LogInformation("Llamado al metodo Delete en el CiudadController");
             if (ciudadId <= 0)
-                return BadRequest("El ID de la ciudad es inválido.");
+                return Ok("El ID de la ciudad es inválido.");
             try
             {
                 bool resultado = await _ciudadServicio.Delete(ciudadId);
@@ -120,7 +143,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -129,12 +152,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
-        [HttpPost(nameof(CiudadController.Update))]
+        [HttpPut(nameof(CiudadController.Update))]
         public async Task<IActionResult> Update([FromBody] Ciudad ciudad)
         {
             _logger.LogInformation("Llamado al metodo Update en el CiudadController");
             if (ciudad == null)
-                return BadRequest("El objeto ciudad no puede ser nulo.");
+                return Ok("El objeto ciudad no puede ser nulo.");
             try
             {
                 Ciudad ciudadActualizada = await _ciudadServicio.Update(ciudad);
@@ -142,7 +165,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {

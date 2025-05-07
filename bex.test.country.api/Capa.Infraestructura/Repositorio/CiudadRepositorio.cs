@@ -1,4 +1,5 @@
-﻿using bex.test.country.api.Capa.Dominio.Entidades;
+﻿using bex.test.country.api.Capa.Aplicacion.DTOs;
+using bex.test.country.api.Capa.Dominio.Entidades;
 using bex.test.country.api.Capa.Dominio.Enums;
 using bex.test.country.api.Capa.Dominio.Interfaces;
 using bex.test.country.api.Capa.Infraestructura.Data.Interface;
@@ -50,7 +51,7 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
             return resultadoGenerico.EsExitoso;
         }
 
-        public async Task<List<Ciudad>> GetAll()
+        public async Task<List<CiudadDTO>> GetAll()
         {
             SqlSPEjecuta sqlSPExecute = new()
             {
@@ -58,10 +59,10 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
                 Parametros = new(),
                 AccionSP = AccionSP.Select
             };
-            return await _sqlExecute.EjecutaGenericoPSAsync<List<Ciudad>>(sqlSPExecute);
+            return await _sqlExecute.EjecutaGenericoPSAsync<List<CiudadDTO>>(sqlSPExecute);
         }
 
-        public async Task<List<Ciudad>> GetByDepartamentoId(int departamentoId)
+        public async Task<List<CiudadDTO>> GetByDepartamentoId(int departamentoId)
         {
             List<ParametroGenerico> paramGenerics = new List<ParametroGenerico>
             {
@@ -74,10 +75,10 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
                 Parametros = paramGenerics,
                 AccionSP = AccionSP.Select
             };
-            return await _sqlExecute.EjecutaGenericoPSAsync<List<Ciudad>>(sqlSPExecute);
+            return await _sqlExecute.EjecutaGenericoPSAsync<List<CiudadDTO>>(sqlSPExecute);
         }
 
-        public async Task<Ciudad> GetById(int ciudadId)
+        public async Task<CiudadDTO> GetById(int ciudadId)
         {
             List<ParametroGenerico> paramGenerics = new List<ParametroGenerico>
             {
@@ -90,7 +91,7 @@ namespace bex.test.country.api.Capa.Infraestructura.Repositorio
                 Parametros = paramGenerics,
                 AccionSP = AccionSP.Select
             };
-            List<Ciudad> ciudades = await _sqlExecute.EjecutaGenericoPSAsync<List<Ciudad>>(sqlSPExecute);
+            List<CiudadDTO> ciudades = await _sqlExecute.EjecutaGenericoPSAsync<List<CiudadDTO>>(sqlSPExecute);
             return ciudades.FirstOrDefault();
         }
 

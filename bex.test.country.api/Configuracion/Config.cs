@@ -82,6 +82,22 @@ namespace bex.test.country.api.Configuracion
             builder.Services.AddScoped<ISqlEjecuta, SqlEjecuta>();
             #endregion Register Dependency Injection - Data
 
+            #region Policies Angular
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                });
+            });
+
+            #endregion Policies Angular
+
+
+
             builder.Services.AddHttpContextAccessor();
 
         }
@@ -93,6 +109,7 @@ namespace bex.test.country.api.Configuracion
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("CorsPolicy");
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseHttpsRedirection();
             app.UseAuthorization();

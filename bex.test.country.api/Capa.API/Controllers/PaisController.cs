@@ -30,7 +30,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace bex.test.country.api.Capa.API.Controllers
         {
             _logger.LogInformation("Llamado al metodo GetById en el PaisController");
             if (paisId <= 0)
-                return BadRequest("El ID del país es inválido.");
+                return Ok("El ID del país es inválido.");
             try
             {
                 Pais pais = await _paisServicio.GetById(paisId);
@@ -52,11 +52,33 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el país con ID: {PaisId}", paisId);
+                return StatusCode(500, "Ocurrió un error interno al obtener el país.");
+            }
+        }
+
+        [HttpGet(nameof(PaisController.GetByNombre))]
+        public async Task<IActionResult> GetByNombre(string nombrePais)
+        {
+            _logger.LogInformation("Llamado al metodo GetByNombre en el PaisController");
+            if (string.IsNullOrEmpty(nombrePais))
+                return Ok("El nombre del país es inválido.");
+            try
+            {
+                Pais pais = await _paisServicio.GetByNombre(nombrePais);
+                return Ok(new { Mensaje = "Ya existe un país con el nombre: " + pais.NombrePais, Resultado = pais, EsExitoso = true });
+            }
+            catch (ValidacionException vex)
+            {
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el país con nombre: {NombrePais}", nombrePais);
                 return StatusCode(500, "Ocurrió un error interno al obtener el país.");
             }
         }
@@ -66,9 +88,9 @@ namespace bex.test.country.api.Capa.API.Controllers
         {
             _logger.LogInformation("Llamado al metodo Create en el PaisController");
             if (pais == null)
-                return BadRequest("El país no puede ser nulo.");
+                return Ok("El país no puede ser nulo.");
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return Ok(ModelState);
 
             try
             {
@@ -77,7 +99,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -86,12 +108,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
-        [HttpPost(nameof(PaisController.Delete))]
+        [HttpDelete(nameof(PaisController.Delete))]
         public async Task<IActionResult> Delete(int paisId)
         {
             _logger.LogInformation("Llamado al metodo Delete en el PaisController");
             if (paisId <= 0)
-                return BadRequest("El ID del país es inválido.");
+                return Ok("El ID del país es inválido.");
             try
             {
                 bool resultado = await _paisServicio.Delete(paisId);
@@ -99,7 +121,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -108,14 +130,14 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
-        [HttpPost(nameof(PaisController.Update))]
+        [HttpPut(nameof(PaisController.Update))]
         public async Task<IActionResult> Update([FromBody] Pais pais)
         {
             _logger.LogInformation("Llamado al metodo Update en el PaisController");
             if (pais == null)
-                return BadRequest("El país no puede ser nulo.");
+                return Ok("El país no puede ser nulo.");
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return Ok(ModelState);
             try
             {
                 Pais paisActualizado = await _paisServicio.Update(pais);
@@ -123,7 +145,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {

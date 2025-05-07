@@ -1,4 +1,5 @@
 ﻿using bex.test.country.api.Capa.Aplicacion.Common;
+using bex.test.country.api.Capa.Aplicacion.DTOs;
 using bex.test.country.api.Capa.Aplicacion.Interfaces;
 using bex.test.country.api.Capa.Dominio.Entidades;
 using bex.test.country.api.Capa.Dominio.Interfaces;
@@ -84,11 +85,11 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
-        public async Task<List<Ciudad>> GetAll()
+        public async Task<List<CiudadDTO>> GetAll()
         {
             try
             {
-                List<Ciudad> ciudades = await _ciudadRepositorio.GetAll();
+                List<CiudadDTO> ciudades = await _ciudadRepositorio.GetAll();
                 if (ciudades == null || ciudades.Count == 0)
                 {
                     _logger.LogWarning("No se encontraron ciudades.");
@@ -109,11 +110,11 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
-        public async Task<List<Ciudad>> GetByDepartamentoId(int departamentoId)
+        public async Task<List<CiudadDTO>> GetByDepartamentoId(int departamentoId)
         {
             try
             {
-                List<Ciudad> ciudades = await _ciudadRepositorio.GetByDepartamentoId(departamentoId);
+                List<CiudadDTO> ciudades = await _ciudadRepositorio.GetByDepartamentoId(departamentoId);
                 if (ciudades == null || ciudades.Count == 0)
                 {
                     _logger.LogWarning("No se encontraron ciudades para el departamento con ID: {DepartamentoId}", departamentoId);
@@ -134,11 +135,11 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
-        public async Task<Ciudad> GetById(int ciudadId)
+        public async Task<CiudadDTO> GetById(int ciudadId)
         {
             try
             {
-                Ciudad ciudad = await _ciudadRepositorio.GetById(ciudadId);
+                CiudadDTO ciudad = await _ciudadRepositorio.GetById(ciudadId);
                 if (ciudad == null)
                 {
                     _logger.LogWarning("No se encontró la ciudad con ID: {CiudadId}", ciudadId);
@@ -156,6 +157,31 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             {
                 _logger.LogError(ex, "Error al obtener la ciudad con ID: {CiudadId}. CorrelacionId {CorrelationId}. Mensaje {Message}", ciudadId, GetCorrelacionId(), ex.Message);
                 throw new Exception("Error al obtener la ciudad con ID: " + ciudadId);
+            }
+        }
+
+        public async Task<Ciudad> GetByNombre(string nombreCiudad)
+        {
+            try
+            {
+                Ciudad ciudad = await _ciudadRepositorio.GetByNombre(nombreCiudad);
+                if (ciudad == null)
+                {
+                    _logger.LogWarning("No se encontró la ciudad con nombre: {NombreCiudad}", nombreCiudad);
+                    throw new ValidacionException("No se encontró la ciudad con nombre: " + nombreCiudad);
+                }
+                _logger.LogInformation("Ciudad encontrada: {NombreCiudad}", ciudad.NombreCiudad);
+                return ciudad;
+            }
+            catch (ValidacionException vex)
+            {
+                _logger.LogWarning("{Message}", vex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la ciudad con nombre: {NombreCiudad}. CorrelacionId {CorrelationId}. Mensaje {Message}", nombreCiudad, GetCorrelacionId(), ex.Message);
+                throw new Exception("Error al obtener la ciudad con nombre: " + nombreCiudad);
             }
         }
 

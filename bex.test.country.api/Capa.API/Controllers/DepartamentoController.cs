@@ -1,4 +1,5 @@
 ﻿using bex.test.country.api.Capa.Aplicacion.Common;
+using bex.test.country.api.Capa.Aplicacion.DTOs;
 using bex.test.country.api.Capa.Aplicacion.Interfaces;
 using bex.test.country.api.Capa.Dominio.Entidades;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +25,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             _logger.LogInformation("Llamado al metodo GetAll en el DepartamentoController");
             try
             {
-                List<Departamento> departamentos = await _departamentoServicio.GetAll();
+                List<DepartamentoDTO> departamentos = await _departamentoServicio.GetAll();
                 return Ok(new { Message = "Se encontraron " + departamentos.Count.ToString() + " departamentos", Resultado = departamentos, EsExitoso = true });
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -43,15 +44,15 @@ namespace bex.test.country.api.Capa.API.Controllers
         {
             _logger.LogInformation("Llamado al metodo GetById en el DepartamentoController");
             if (departamentoId <= 0)
-                return BadRequest("El ID del departamento es inválido.");
+                return Ok("El ID del departamento es inválido.");
             try
             {
-                Departamento departamento = await _departamentoServicio.GetById(departamentoId);
+                DepartamentoDTO departamento = await _departamentoServicio.GetById(departamentoId);
                 return Ok(new { Mensaje = "Departamento encontrado: " + departamento.NombreDepartamento, Resultado = departamento, EsExitoso = true });
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -65,15 +66,15 @@ namespace bex.test.country.api.Capa.API.Controllers
         {
             _logger.LogInformation("Llamado al metodo GetByPaisId en el DepartamentoController");
             if (paisId <= 0)
-                return BadRequest("El ID del país es inválido.");
+                return Ok("El ID del país es inválido.");
             try
             {
-                List<Departamento> departamentos = await _departamentoServicio.GetByPaisId(paisId);
+                List<DepartamentoDTO> departamentos = await _departamentoServicio.GetByPaisId(paisId);
                 return Ok(new { Mensaje = "Se encontraron " + departamentos.Count.ToString() + " departamentos para el país con ID: " + paisId, Resultado = departamentos, EsExitoso = true });
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -82,12 +83,34 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
+        [HttpGet(nameof(DepartamentoController.GetByNombre))]
+        public async Task<IActionResult> GetByNombre(string nombreDepartamento)
+        {
+            _logger.LogInformation("Llamado al metodo GetByNombre en el DepartamentoController");
+            if (string.IsNullOrEmpty(nombreDepartamento))
+                return Ok("El nombre del departamento es inválido.");
+            try
+            {
+                Departamento departamento = await _departamentoServicio.GetByNombre(nombreDepartamento);
+                return Ok(new { Mensaje = "Ya existe un departamento con el nombre: " + departamento.NombreDepartamento, Resultado = departamento, EsExitoso = true });
+            }
+            catch (ValidacionException vex)
+            {
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el departamento con nombre: {Nombre}", nombreDepartamento);
+                return StatusCode(500, "Ocurrió un error interno al obtener el departamento.");
+            }
+        }
+
         [HttpPost(nameof(DepartamentoController.Create))]
         public async Task<IActionResult> Create([FromBody] Departamento departamento)
         {
             _logger.LogInformation("Llamado al metodo Create en el DepartamentoController");
             if (departamento == null)
-                return BadRequest("El departamento no puede ser nulo.");
+                return Ok("El departamento no puede ser nulo.");
             try
             {
                 Departamento nuevoDepartamento = await _departamentoServicio.Create(departamento);
@@ -95,7 +118,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -104,12 +127,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
-        [HttpPost(nameof(DepartamentoController.Delete))]
+        [HttpDelete(nameof(DepartamentoController.Delete))]
         public async Task<IActionResult> Delete(int departamentoId)
         {
             _logger.LogInformation("Llamado al metodo Delete en el DepartamentoController");
             if (departamentoId <= 0)
-                return BadRequest("El ID del departamento es inválido.");
+                return Ok("El ID del departamento es inválido.");
             try
             {
                 bool resultado = await _departamentoServicio.Delete(departamentoId);
@@ -117,7 +140,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {
@@ -126,12 +149,12 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
         }
 
-        [HttpPost(nameof(DepartamentoController.Update))]
+        [HttpPut(nameof(DepartamentoController.Update))]
         public async Task<IActionResult> Update([FromBody] Departamento departamento)
         {
             _logger.LogInformation("Llamado al metodo Update en el DepartamentoController");
             if (departamento == null)
-                return BadRequest("El departamento no puede ser nulo.");
+                return Ok("El departamento no puede ser nulo.");
             try
             {
                 Departamento departamentoActualizado = await _departamentoServicio.Update(departamento);
@@ -139,7 +162,7 @@ namespace bex.test.country.api.Capa.API.Controllers
             }
             catch (ValidacionException vex)
             {
-                return BadRequest(new { Mensaje = vex.Message, EsExitoso = false });
+                return Ok(new { Mensaje = vex.Message, EsExitoso = false });
             }
             catch (Exception ex)
             {

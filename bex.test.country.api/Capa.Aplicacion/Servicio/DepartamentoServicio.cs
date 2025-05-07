@@ -1,4 +1,5 @@
 ﻿using bex.test.country.api.Capa.Aplicacion.Common;
+using bex.test.country.api.Capa.Aplicacion.DTOs;
 using bex.test.country.api.Capa.Aplicacion.Interfaces;
 using bex.test.country.api.Capa.Dominio.Entidades;
 using bex.test.country.api.Capa.Dominio.Interfaces;
@@ -85,11 +86,11 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
-        public async Task<List<Departamento>> GetAll()
+        public async Task<List<DepartamentoDTO>> GetAll()
         {
             try
             {
-                List<Departamento> departamentos = await _departamentoRepositorio.GetAll();
+                List<DepartamentoDTO> departamentos = await _departamentoRepositorio.GetAll();
                 if (departamentos == null || departamentos.Count == 0)
                 {
                     _logger.LogWarning("No se encontraron departamentos.");
@@ -110,11 +111,11 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
-        public async Task<Departamento> GetById(int departamentoId)
+        public async Task<DepartamentoDTO> GetById(int departamentoId)
         {
             try
             {
-                Departamento? departamento = await _departamentoRepositorio.GetById(departamentoId);
+                DepartamentoDTO? departamento = await _departamentoRepositorio.GetById(departamentoId);
                 if (departamento == null)
                 {
                     _logger.LogWarning("No se encontró el departamento con ID: {DepartamentoId}", departamentoId);
@@ -135,11 +136,36 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
-        public async Task<List<Departamento>> GetByPaisId(int paisId)
+        public async Task<Departamento> GetByNombre(string nombreDepartamento)
         {
             try
             {
-                List<Departamento>? departamentos = await _departamentoRepositorio.GetByPaisId(paisId);
+                Departamento? departamento = await _departamentoRepositorio.GetByNombre(nombreDepartamento);
+                if (departamento == null)
+                {
+                    _logger.LogWarning("No se encontró el departamento con nombre: {NombreDepartamento}", nombreDepartamento);
+                    throw new ValidacionException("No se encontró el departamento con nombre: " + nombreDepartamento);
+                }
+                _logger.LogInformation("Departamento encontrado: {NombreDepartamento}", departamento.NombreDepartamento);
+                return departamento;
+            }
+            catch (ValidacionException vex)
+            {
+                _logger.LogWarning("{Message}", vex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el departamento por nombre: {NombreDepartamento}. CorrelacionId {CorrelationId}. Mensaje {Message}", nombreDepartamento, GetCorrelacionId(), ex.Message);
+                throw new Exception("Error al obtener el departamento por nombre: " + nombreDepartamento);
+            }
+        }
+
+        public async Task<List<DepartamentoDTO>> GetByPaisId(int paisId)
+        {
+            try
+            {
+                List<DepartamentoDTO>? departamentos = await _departamentoRepositorio.GetByPaisId(paisId);
                 if (departamentos == null || departamentos.Count == 0)
                 {
                     _logger.LogWarning("No se encontró el departamentos con ID de país: {PaisId}", paisId);

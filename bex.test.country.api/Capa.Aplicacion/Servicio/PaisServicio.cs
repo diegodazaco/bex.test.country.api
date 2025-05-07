@@ -131,6 +131,31 @@ namespace bex.test.country.api.Capa.Aplicacion.Servicio
             }
         }
 
+        public async Task<Pais> GetByNombre(string nombrePais)
+        {
+            try
+            {
+                Pais? pais = await _paisRepositorio.GetByNombre(nombrePais);
+                if (pais == null)
+                {
+                    _logger.LogWarning("No se encontró el país con nombre: {NombrePais}", nombrePais);
+                    throw new ValidacionException("No se encontró el país con nombre: " + nombrePais);
+                }
+                _logger.LogInformation("Se encontró el país con nombre: {NombrePais}", nombrePais);
+                return pais;
+            }
+            catch (ValidacionException vex)
+            {
+                _logger.LogWarning("{Message}", vex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el país con nombre: {NombrePais}. CorrelacionId {CorrelationId}. Mensaje {Message}", nombrePais, GetCorrelacionId(), ex.Message);
+                throw new Exception("Error al obtener el país con nombre: " + nombrePais);
+            }
+        }
+
         public async Task<Pais> Update(Pais pais)
         {
             try
